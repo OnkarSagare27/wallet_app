@@ -1,17 +1,17 @@
 class UserModel {
-  final int balance;
-  final String token;
-  final String username;
-  final String email;
-  final String firstName;
-  final String lastName;
-  final bool isVerified;
-  final String role;
-  final String ownerId;
-  final String walletAddress;
-  final bool hasWallet;
-  final DateTime lastLogin;
-  final String profilePictureUrl;
+  int balance;
+  String token;
+  String username;
+  String email;
+  String firstName;
+  String lastName;
+  bool isVerified;
+  String role;
+  String ownerId;
+  String walletAddress;
+  bool hasWallet;
+  DateTime lastLogin;
+  String profilePictureUrl;
 
   UserModel({
     required this.balance,

@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wallet_app/providers/auth_provider.dart';
 
+import '../../widgets/custom_snackbar.dart';
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -53,27 +55,15 @@ class _LoginScreenState extends State<LoginScreen> {
     return true;
   }
 
-  // This bool controls the loading state of the home screen
+  // This bool controls the loading state of the login screen
   bool isLoading = false;
 
-  void showSnackBar(BuildContext context) {
-    // Create a SnackBar
-    final snackBar = SnackBar(
-      content: const Text('This is a SnackBar!'),
-      duration: const Duration(seconds: 2),
-      action: SnackBarAction(
-        label: 'Undo',
-        onPressed: () {
-          // Perform some action
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Undo action executed')),
-          );
-        },
-      ),
-    );
-
-    // Show the SnackBar using ScaffoldMessenger
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  // Dispose text editing controllers
+  @override
+  void dispose() {
+    usernameOrEmailEditingController.dispose();
+    passwordEditingController.dispose();
+    super.dispose();
   }
 
   @override
@@ -218,12 +208,18 @@ class _LoginScreenState extends State<LoginScreen> {
                                         isLoading = false;
                                       });
                                     } else {
-                                      Navigator.pushReplacementNamed(
-                                          context, '/home_screen');
+                                      if (authProvider.userModel!.hasWallet) {
+                                        Navigator.pushReplacementNamed(
+                                            context, '/home_screen');
+                                      } else {
+                                        Navigator.pushReplacementNamed(
+                                            context, '/create_wallet_screen');
+                                      }
                                     }
                                   });
                                 } else {
-                                  showSnackBar(context);
+                                  showSnackBar(context,
+                                      'Please check your internet connectivity');
                                 }
                               }
                             },

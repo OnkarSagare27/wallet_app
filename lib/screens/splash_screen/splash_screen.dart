@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -31,7 +32,12 @@ class _SplashScreenState extends State<SplashScreen> {
     if (data != null) {
       Map<String, dynamic> userData = jsonDecode(data);
       authProvider.userModel = UserModel.fromJson(userData);
-      Navigator.pushReplacementNamed(context, '/home_screen');
+      log(userData.toString());
+      if (authProvider.userModel!.hasWallet) {
+        Navigator.pushReplacementNamed(context, '/home_screen');
+      } else {
+        Navigator.pushReplacementNamed(context, '/create_wallet_screen');
+      }
     } else {
       Navigator.pushReplacementNamed(context, '/login_screen');
     }
