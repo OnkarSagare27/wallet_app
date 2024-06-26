@@ -54,6 +54,7 @@ class AuthProvider extends ChangeNotifier {
       preffs.setString('userWalletData', jsonEncode(_walletModel!.toJson()));
       _userModel!.walletAddress = _walletModel!.publicKey;
       _userModel!.hasWallet = true;
+      _userModel!.network = _walletModel!.network;
       notifyListeners();
       preffs.setString('userData', jsonEncode(_userModel!.toJson()));
     }

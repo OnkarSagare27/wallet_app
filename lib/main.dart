@@ -5,6 +5,7 @@ import 'package:wallet_app/providers/auth_provider.dart';
 import 'package:wallet_app/screens/create_wallet_screen/create_wallet_layout_screen.dart';
 import 'package:wallet_app/screens/create_wallet_screen/providers/create_wallet_provider.dart';
 import 'package:wallet_app/screens/home_screen/home_screen.dart';
+import 'package:wallet_app/screens/home_screen/providers/home_provider.dart';
 import 'package:wallet_app/screens/login_screen/login_screen.dart';
 import 'package:wallet_app/screens/splash_screen/splash_screen.dart';
 
@@ -30,6 +31,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (context) => CreateWalletProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => HomeProvider(),
         ),
       ],
       builder: (context, child) => MaterialApp(

@@ -6,4 +6,5 @@ class Endpoints {
   static const String login = '/user/login';
   // Wallet
   static const String createWallet = '/solana/wallet/create';
+  static const String getWalletBallance = '/solana/wallet/balance';
 }

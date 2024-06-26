@@ -59,4 +59,27 @@ class ApiServices {
     }
     return null;
   }
+
+  static Future<Map<String, dynamic>?> getBalance(
+      String walletAddress, String network, String token) async {
+    final String url =
+        '${Endpoints.baseUrl}${Endpoints.getWalletBallance}?network=$network&wallet_address=$walletAddress';
+    final Map<String, String> headers = {"Flic-Token": token};
+    try {
+      final Response response =
+          await http.get(Uri.parse(url), headers: headers);
+      if (response.statusCode == 201) {
+        dynamic body = jsonDecode(response.body);
+        switch (body['status']) {
+          case 'success':
+            return body;
+          default:
+            return null;
+        }
+      }
+    } catch (e) {
+      log(e.toString());
+    }
+    return null;
+  }
 }

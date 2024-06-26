@@ -7,6 +7,7 @@ class UserModel {
   String lastName;
   bool isVerified;
   String role;
+  String? network;
   String ownerId;
   String walletAddress;
   bool hasWallet;
@@ -27,6 +28,7 @@ class UserModel {
     required this.hasWallet,
     required this.lastLogin,
     required this.profilePictureUrl,
+    this.network,
   });
 
   // Factory constructor for creating a new UserModel instance from a map
@@ -64,6 +66,7 @@ class UserModel {
       'has_wallet': hasWallet,
       'last_login': lastLogin.toIso8601String(),
       'profile_picture_url': profilePictureUrl,
+      'network': network
     };
   }
 }
