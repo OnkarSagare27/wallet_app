@@ -1,3 +1,4 @@
+// All backend endpoint
 class Endpoints {
   // Base url
   static const String baseUrl = 'https://api.socialverseapp.com';
@@ -7,4 +8,5 @@ class Endpoints {
   // Wallet
   static const String createWallet = '/solana/wallet/create';
   static const String getWalletBallance = '/solana/wallet/balance';
+  static const String transferWalletBalance = '/solana/wallet/transfer';
 }

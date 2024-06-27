@@ -8,7 +8,9 @@ import 'package:wallet_app/models/wallet_model.dart';
 
 import '../models/user_model.dart';
 
+// All API calls are made through this class
 class ApiServices {
+  // Login user method to login in the user into the app
   static Future<UserModel?> login(String mixed, String password) async {
     String url = Endpoints.baseUrl + Endpoints.login;
     try {
@@ -30,6 +32,7 @@ class ApiServices {
     return null;
   }
 
+  // Create user wallet method to create a new wallet for a user
   static Future<WalletModel?> createWallet(
       String token, String walletName, String network, String pincode) async {
     String url = Endpoints.baseUrl + Endpoints.createWallet;
@@ -43,10 +46,10 @@ class ApiServices {
       final Map<String, String> headers = {"Flic-Token": token};
       final Response response =
           await http.post(Uri.parse(url), headers: headers, body: body);
-
+      log(response.body.toString());
       if (response.statusCode == 201) {
         dynamic body = jsonDecode(response.body);
-
+        log(body);
         switch (body['status']) {
           case 'success':
             return WalletModel.fromJson(body);
@@ -60,6 +63,7 @@ class ApiServices {
     return null;
   }
 
+// Get user balance method to fetch the balance of the user
   static Future<Map<String, dynamic>?> getBalance(
       String walletAddress, String network, String token) async {
     final String url =
@@ -77,6 +81,37 @@ class ApiServices {
             return null;
         }
       }
+    } catch (e) {
+      log(e.toString());
+    }
+    return null;
+  }
+
+// Method to transfer the balance from one user account to another
+  static Future<Map<String, dynamic>?> transferBalance(
+      String recipientAddress,
+      String network,
+      String senderAddress,
+      double amount,
+      String userPin,
+      String token) async {
+    const String url = Endpoints.baseUrl + Endpoints.transferWalletBalance;
+    final Map<String, String> headers = {"Flic-Token": token};
+    final Map<String, dynamic> body = {
+      "recipient_address": recipientAddress,
+      "network": network,
+      "sender_address": senderAddress,
+      "amount": amount.toString(),
+      "user_pin": userPin
+    };
+
+    try {
+      final Response response =
+          await http.post(Uri.parse(url), headers: headers, body: body);
+      log(response.body.toString());
+
+      dynamic resBody = jsonDecode(response.body);
+      return resBody;
     } catch (e) {
       log(e.toString());
     }

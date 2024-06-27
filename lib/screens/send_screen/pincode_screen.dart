@@ -1,41 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wallet_app/providers/auth_provider.dart';
+import 'package:wallet_app/screens/wallet_screen/providers/wallet_provider.dart';
+import 'package:wallet_app/services/api_services.dart';
 import 'package:wallet_app/widgets/custom_button.dart';
-import 'package:wallet_app/widgets/custom_dilog_box.dart';
-import 'package:wallet_app/widgets/custom_text_field.dart';
-import 'providers/create_wallet_provider.dart';
 
-class CreateWalletScreen extends StatefulWidget {
-  const CreateWalletScreen({super.key});
+import '../../widgets/custom_dilog_box.dart';
+import '../../widgets/custom_text_field.dart';
+
+class PincodeScreen extends StatefulWidget {
+  const PincodeScreen(
+      {super.key, required this.recipientAddress, required this.amount});
+  final String recipientAddress;
+  final double amount;
 
   @override
-  State<CreateWalletScreen> createState() => _CreateWalletScreenState();
+  State<PincodeScreen> createState() => _PincodeScreenState();
 }
 
-class _CreateWalletScreenState extends State<CreateWalletScreen> {
-  // Text editing controller for Wallet name and Pincode
-  TextEditingController walletNameEditingController = TextEditingController();
+class _PincodeScreenState extends State<PincodeScreen> {
+  // Text editing controller for Pincode
   TextEditingController pincodeEditingController = TextEditingController();
 
-  // These varibales will be used to set or change error text of Wallet name and Pincode text field
-  String? walletNameErrorText;
+  // This varibales will be used to set or change error text of Pincode text field
   String? pincodeErrorText;
 
-  // This is a basic validation method which will be used to validate Wallet name and Pincode
+  // This is a basic validation method which will be used to validate Pincode
   bool validate() {
     setState(() {
-      walletNameErrorText = null;
       pincodeErrorText = null;
     });
 
-    if (walletNameEditingController.text.isEmpty ||
-        pincodeEditingController.text.isEmpty) {
+    if (pincodeEditingController.text.isEmpty) {
       if (mounted) {
         setState(() {
-          walletNameErrorText = walletNameEditingController.text.isEmpty
-              ? 'Please enter a Wallet name'
-              : null;
           pincodeErrorText = pincodeEditingController.text.isEmpty
               ? 'Please enter a 6-digit pin'
               : null;
@@ -69,63 +67,36 @@ class _CreateWalletScreenState extends State<CreateWalletScreen> {
     }
   }
 
-  // This bool controls the loading state of the create wallet screen
-  bool isLoading = false;
+  // This bool controls the loading state of the pincode screen
 
-  // Dispose text editing controllers
-  @override
-  void dispose() {
-    walletNameEditingController.dispose();
-    pincodeEditingController.dispose();
-    super.dispose();
-  }
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<CreateWalletProvider, AuthProvider>(
-        builder: (context, createWalletProvider, authProvider, child) {
+    return Consumer2<AuthProvider, WalletProvider>(
+        builder: (context, authProvider, walletPorvider, child) {
       return Scaffold(
         appBar: AppBar(
           leading: IconButton(
             enableFeedback: false,
             onPressed: () {
-              createWalletProvider.pageController.animateToPage(0,
-                  duration: const Duration(milliseconds: 150),
-                  curve: Curves.linear);
+              Navigator.pop(context);
             },
             icon: const Icon(
               Icons.arrow_back_rounded,
               color: Colors.white,
             ),
           ),
-          title: const Text('Create Wallet'),
-          titleTextStyle: const TextStyle(fontWeight: FontWeight.bold),
+          title: const Text('Enter Pincode'),
           centerTitle: true,
+          automaticallyImplyLeading: false,
+          titleTextStyle:
+              const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         body: Padding(
-          padding: const EdgeInsets.all(25),
+          padding: const EdgeInsets.only(right: 25, left: 25, bottom: 25),
           child: Column(
             children: [
-              const SizedBox(
-                height: 30,
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Wallet Name',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                    ),
-                  ),
-                ),
-              ),
-              CustomTextField(
-                hintText: 'Eg. Sam\'s Wallet',
-                enabled: !isLoading,
-                errorText: walletNameErrorText,
-                controller: walletNameEditingController,
-              ),
               const SizedBox(
                 height: 30,
                 child: Align(
@@ -141,7 +112,7 @@ class _CreateWalletScreenState extends State<CreateWalletScreen> {
                 ),
               ),
               CustomTextField(
-                hintText: 'Eg. 6-digit numeric pin',
+                hintText: '6-digit numeric pin',
                 enabled: !isLoading,
                 keyboardType: TextInputType.number,
                 obscureText: isObscured,
@@ -161,7 +132,9 @@ class _CreateWalletScreenState extends State<CreateWalletScreen> {
                   ),
                 ),
               ),
-              const Spacer(),
+              const SizedBox(
+                height: 20,
+              ),
               isLoading
                   ? const Center(
                       child: CircularProgressIndicator(
@@ -169,35 +142,38 @@ class _CreateWalletScreenState extends State<CreateWalletScreen> {
                       ),
                     )
                   : CustomButton(
-                      onTap: () async {
+                      onTap: () {
                         if (validate()) {
                           if (authProvider.isConnected) {
                             setState(() {
                               isLoading = true;
                             });
-                            await authProvider
-                                .createUserWallet(
-                                    walletNameEditingController.text,
-                                    pincodeEditingController.text)
-                                .then((_) {
-                              if (authProvider.walletModel == null) {
-                                setState(() {
-                                  walletNameErrorText = ' ';
-                                  pincodeErrorText = 'Invalid credentials';
-                                  isLoading = false;
-                                });
+                            ApiServices.transferBalance(
+                                    widget.recipientAddress,
+                                    'devnet',
+                                    authProvider.userModel!.walletAddress,
+                                    widget.amount,
+                                    pincodeEditingController.text,
+                                    authProvider.userModel!.token)
+                                .then((res) {
+                              setState(() {
+                                isLoading = false;
+                              });
+                              if (res != null) {
+                                if (res['status'] == 'success') {
+                                  Navigator.popUntil(context,
+                                      ModalRoute.withName('/wallet_screen'));
+                                }
+                                showBlurredDialog(context, res['message']);
                               } else {
-                                Navigator.pushReplacementNamed(
-                                    context, '/wallet_screen');
+                                showBlurredDialog(context,
+                                    'Something went wrong, please try again later.');
                               }
                             });
-                          } else {
-                            showBlurredDialog(context,
-                                'Please check your internet connectivity');
                           }
                         }
                       },
-                      text: 'Create',
+                      text: 'Transfer',
                     )
             ],
           ),

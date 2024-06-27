@@ -1,3 +1,4 @@
+// This class represents a User of the app
 class UserModel {
   int balance;
   String token;

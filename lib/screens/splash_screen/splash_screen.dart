@@ -23,6 +23,7 @@ class _SplashScreenState extends State<SplashScreen> {
     loadData();
   }
 
+  // This method checks if the user is already logged in and the navigate accordingly
   void loadData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     dynamic data = prefs.getString('userData');
@@ -34,7 +35,7 @@ class _SplashScreenState extends State<SplashScreen> {
       authProvider.userModel = UserModel.fromJson(userData);
       log(userData.toString());
       if (authProvider.userModel!.hasWallet) {
-        Navigator.pushReplacementNamed(context, '/home_screen');
+        Navigator.pushReplacementNamed(context, '/wallet_screen');
       } else {
         Navigator.pushReplacementNamed(context, '/create_wallet_screen');
       }

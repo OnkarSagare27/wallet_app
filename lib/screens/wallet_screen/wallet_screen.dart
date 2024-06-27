@@ -1,39 +1,56 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:wallet_app/providers/auth_provider.dart';
-import 'package:wallet_app/screens/home_screen/providers/home_provider.dart';
+import 'package:wallet_app/screens/wallet_screen/providers/wallet_provider.dart';
+import 'package:wallet_app/widgets/custom_snackbar.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class WalletScreen extends StatefulWidget {
+  const WalletScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<WalletScreen> createState() => _WalletScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _WalletScreenState extends State<WalletScreen> {
   // This bool controls the loading state of the home screen
   bool isLoading = true;
   late AuthProvider authProv;
-  late HomeProvider homeProv;
+  late WalletProvider homeProv;
   @override
   void initState() {
     authProv = Provider.of<AuthProvider>(context, listen: false);
-    homeProv = Provider.of<HomeProvider>(context, listen: false);
-    homeProv
-        .getUserBalance(authProv.userModel!.walletAddress, 'devnet',
-            authProv.userModel!.token)
-        .then((_) {
-      setState(() {
-        isLoading = false;
+    homeProv = Provider.of<WalletProvider>(context, listen: false);
+    // Loading user's wallet balance on initialization of the wallet screen
+    if (authProv.isConnected) {
+      homeProv
+          .getUserBalance(authProv.userModel!.walletAddress, 'devnet',
+              authProv.userModel!.token)
+          .then((_) {
+        setState(() {
+          isLoading = false;
+        });
       });
-    });
+    }
+
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<AuthProvider, HomeProvider>(
+    return Consumer2<AuthProvider, WalletProvider>(
         builder: (context, authProvider, homeProvider, child) {
+      // In case of network failure this code block will fetch the user's balance once it is connected to the internet
+      if (authProvider.isConnected) {
+        homeProvider
+            .getUserBalance(authProv.userModel!.walletAddress, 'devnet',
+                authProv.userModel!.token)
+            .then((_) {
+          setState(() {
+            isLoading = false;
+          });
+        });
+      }
       return Scaffold(
         appBar: AppBar(
           title: const Text('Wallet'),
@@ -91,7 +108,12 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               InkWell(
                                 enableFeedback: false,
-                                onTap: () {},
+                                onTap: () {
+                                  Clipboard.setData(ClipboardData(
+                                    text: authProvider.userModel!.walletAddress,
+                                  ));
+                                  showSnackBar(context, 'Copied to clipboard');
+                                },
                                 child: const Icon(
                                   Icons.copy_rounded,
                                   size: 12,
@@ -106,7 +128,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       height: 20,
                     ),
                     InkWell(
-                      onTap: () async {},
+                      onTap: () {
+                        Navigator.pushNamed(context, '/send_screen');
+                      },
                       enableFeedback: false,
                       borderRadius: BorderRadius.circular(10),
                       child: Container(

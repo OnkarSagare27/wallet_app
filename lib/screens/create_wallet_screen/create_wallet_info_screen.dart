@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wallet_app/screens/create_wallet_screen/providers/create_wallet_provider.dart';
+import 'package:wallet_app/widgets/custom_button.dart';
 
 import 'widgets/rectangular_image_with_shadow_border.dart';
 
@@ -44,39 +45,14 @@ class _CreateWalletInfoScreenState extends State<CreateWalletInfoScreen> {
                             imagePath: 'assets/logo.png'),
                       ),
                     ),
-                    InkWell(
+                    CustomButton(
                       onTap: () {
                         createWalletProvider.pageController.animateToPage(1,
                             duration: const Duration(milliseconds: 150),
                             curve: Curves.bounceInOut);
                       },
-                      enableFeedback: false,
-                      borderRadius: BorderRadius.circular(10),
-                      child: Container(
-                        height: 50,
-                        width: double.infinity,
-                        decoration: const BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              Color(0xFFFFD700),
-                              Color(0xFFF0C300),
-                              Color(0xFFFFE135),
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
-                        ),
-                        child: const Center(
-                          child: Text(
-                            'Create Wallet',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ),
-                    ),
+                      text: 'Create Wallet',
+                    )
                   ],
                 ),
               ),

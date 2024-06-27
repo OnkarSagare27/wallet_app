@@ -1,5 +1,6 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 
+// This class handles the connectivity to the internet
 class ConnectivityHandler {
   static final ConnectivityHandler _instance = ConnectivityHandler._();
 

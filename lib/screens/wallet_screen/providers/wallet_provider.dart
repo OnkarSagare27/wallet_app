@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:wallet_app/services/api_services.dart';
 
-class HomeProvider extends ChangeNotifier {
-  String _balance = '0.00';
+// Wallet provider to handle state of Wallet screens
+class WalletProvider extends ChangeNotifier {
+  double _balance = 0.00;
 
-  String get balance => _balance;
+  double get balance => _balance;
 
-  set balance(String newBalance) {
+  set balance(double newBalance) {
     _balance = newBalance;
     notifyListeners();
   }
@@ -16,7 +17,7 @@ class HomeProvider extends ChangeNotifier {
     Map<String, dynamic>? newBalRes =
         await ApiServices.getBalance(walletAddress, network, token);
     if (newBalRes != null) {
-      _balance = double.parse(newBalRes['balance'].toString()).toString();
+      _balance = double.parse(newBalRes['balance'].toString());
       notifyListeners();
     }
   }

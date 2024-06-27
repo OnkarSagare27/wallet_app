@@ -3,8 +3,8 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wallet_app/providers/auth_provider.dart';
-
-import '../../widgets/custom_snackbar.dart';
+import 'package:wallet_app/widgets/custom_dilog_box.dart';
+import 'package:wallet_app/widgets/custom_text_field.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -80,98 +80,38 @@ class _LoginScreenState extends State<LoginScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Image.asset(
-                      'assets/login_logo.png',
-                      height: 150,
+                      'assets/logo.png',
+                      height: 200,
                     ),
                     const SizedBox(
                       height: 80,
                     ),
-                    TextField(
+                    CustomTextField(
                       enabled: !isLoading,
+                      hintText: 'Username or email',
+                      errorText: usernameOrEmailErrorText,
                       controller: usernameOrEmailEditingController,
-                      style: const TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.w500),
-                      cursorColor: Colors.blue,
-                      decoration: InputDecoration(
-                        hintText: 'Username or email',
-                        errorText: usernameOrEmailErrorText,
-                        hintStyle: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
-                        ),
-                        filled: true,
-                        fillColor: const Color(0xff212121),
-                        border: const OutlineInputBorder(),
-                        focusedBorder: const OutlineInputBorder(
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(10),
-                            ),
-                            borderSide: BorderSide(
-                              color: Colors.white,
-                            )),
-                        enabledBorder: const OutlineInputBorder(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(10),
-                          ),
-                        ),
-                        disabledBorder: const OutlineInputBorder(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(10),
-                          ),
-                        ),
-                      ),
                     ),
                     const SizedBox(
                       height: 15,
                     ),
-                    TextField(
+                    // Using custom widgets to improve dry code
+                    CustomTextField(
+                      errorText: passwordErrorText,
                       enabled: !isLoading,
                       controller: passwordEditingController,
-                      style: const TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.w500),
                       obscureText: isObscured,
-                      cursorColor: Colors.blue,
-                      decoration: InputDecoration(
-                        errorText: passwordErrorText,
-                        suffixIcon: Padding(
-                          padding: const EdgeInsets.only(right: 20),
-                          child: InkWell(
-                            enableFeedback: false,
-                            onTap: toggleObscured,
-                            child: Icon(
-                              isObscured
-                                  ? Icons.visibility_rounded
-                                  : Icons.visibility_off_rounded,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                        hintText: 'Password',
-                        hintStyle: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
-                        ),
-                        filled: true,
-                        fillColor: const Color(0xff212121),
-                        border: const OutlineInputBorder(),
-                        focusedBorder: const OutlineInputBorder(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(10),
-                          ),
-                          borderSide: BorderSide(
+                      hintText: 'Password',
+                      suffixIcon: Padding(
+                        padding: const EdgeInsets.only(right: 20),
+                        child: InkWell(
+                          enableFeedback: false,
+                          onTap: toggleObscured,
+                          child: Icon(
+                            isObscured
+                                ? Icons.visibility_rounded
+                                : Icons.visibility_off_rounded,
                             color: Colors.white,
-                          ),
-                        ),
-                        enabledBorder: const OutlineInputBorder(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(10),
-                          ),
-                        ),
-                        disabledBorder: const OutlineInputBorder(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(10),
                           ),
                         ),
                       ),
@@ -210,7 +150,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     } else {
                                       if (authProvider.userModel!.hasWallet) {
                                         Navigator.pushReplacementNamed(
-                                            context, '/home_screen');
+                                            context, '/wallet_screen');
                                       } else {
                                         Navigator.pushReplacementNamed(
                                             context, '/create_wallet_screen');
@@ -218,7 +158,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     }
                                   });
                                 } else {
-                                  showSnackBar(context,
+                                  showBlurredDialog(context,
                                       'Please check your internet connectivity');
                                 }
                               }
